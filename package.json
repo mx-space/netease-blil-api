@@ -1,0 +1,17 @@
+{
+  "name": "extra",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rm -r dist && tsc",
+    "dev": "ts-node"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "date-fns": "^2.12.0",
+    "netease-music-sdk": "^0.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.4"
+  }
+}
