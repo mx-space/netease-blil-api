@@ -1,5 +1,5 @@
 {
-  "name": "extra",
+  "name": "@mx-space/extra",
   "version": "0.1.0",
   "main": "dist/index.js",
   "scripts": {
@@ -13,5 +13,16 @@
   },
   "devDependencies": {
     "@types/node": "^13.13.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mx-space/extra.git"
+  },
+  "author": "Innei",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mx-space/extra/issues"
+  },
+  "homepage": "https://github.com/mx-space/extra#readme",
+  "description": ""
 }
