@@ -15,6 +15,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "noImplicitAny": false,
+    "declaration": true,
     "typeRoots": [
       "./node_modules/@types"
     ],
