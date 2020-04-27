@@ -1,8 +1,10 @@
 import { NeteaseMusic, BiliClient } from './src/index'
 import { writeFileSync } from 'fs'
+import configs from './configs'
 async function main() {
-  // const client = new NeteaseMusic("15889653693", "Y6nx4$i33y2");
-  // await client.Login();
+  const client = new NeteaseMusic(configs.phone, configs.password)
+  await client.Login()
+  await client.getFavorite()
   // const weekData = await client.getWeekData();
   // console.dir(weekData);
   // console.dir(await client.getAllData());
