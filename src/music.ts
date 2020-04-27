@@ -75,10 +75,8 @@ export class NeteaseMusic extends MusicClient {
   async getAllData(len = 10) {
     return await this.getRecordAndParseData(UserRecordType.ALL, len)
   }
-  async getFavorite(): Promise<PersonalPlayListType> {
-    const allPlayListData = await this.getUserPlaylist(this.user.id)
-    const playListId = allPlayListData.playlist?.shift().id
-    const playlistInfo = await this.getPlaylistInfo(playListId)
+  async getPlaylistInfo(id: number): Promise<PersonalPlayListType> {
+    const playlistInfo = await super.getPlaylistInfo(id)
     const playListData = playlistInfo.playlist as Playlist.Playlist
     const tracks = playListData.tracks.map(
       (song): PlayListType => {
@@ -97,12 +95,18 @@ export class NeteaseMusic extends MusicClient {
     )
 
     return {
-      id: playListId,
+      id,
       coverImgUrl: playListData.coverImgUrl,
       coverImgId: playListData.coverImgId,
       playCount: playListData.playCount,
+      name: playListData.name,
       data: tracks,
     }
+  }
+  async getFavorite(): Promise<PersonalPlayListType> {
+    const allPlayListData = await this.getUserPlaylist(this.user.id)
+    const playListId = allPlayListData.playlist?.shift().id
+    return await this.getPlaylistInfo(playListId)
   }
 }
 
@@ -111,5 +115,6 @@ export interface PersonalPlayListType {
   coverImgUrl: string
   coverImgId: number
   playCount: number
+  name: string
   data: PlayListType[]
 }

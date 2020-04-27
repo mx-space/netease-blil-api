@@ -1,6 +1,6 @@
 {
   "name": "@mx-space/extra",
-  "version": "0.1.2",
+  "version": "0.2.2",
   "main": "dist/index.js",
   "scripts": {
     "build": "rm -r dist && tsc",

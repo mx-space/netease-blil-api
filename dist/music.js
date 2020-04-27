@@ -12,25 +12,30 @@ class NeteaseMusic extends netease_music_sdk_1.MusicClient {
         super();
         this.phoneNumber = phoneNumber;
         this.password = password;
-        this.tempPath = path_1.join(__dirname, "../temp");
+        this.tempPath = path_1.join(__dirname, '../temp');
         if (fs_1.default.existsSync(this.tempPath)) {
             if (fs_1.default.statSync(this.tempPath).isDirectory()) {
                 return;
             }
-            throw new Error("temp 被占用");
+            throw new Error('temp 被占用');
         }
         else {
             fs_1.default.mkdirSync(this.tempPath);
         }
     }
     async Login() {
-        if (fs_1.default.existsSync(path_1.join(this.tempPath, "./cookie"))) {
-            this.load(JSON.parse(fs_1.default.readFileSync(path_1.resolve(this.tempPath, "./cookie")).toString()));
+        const cookiePath = path_1.join(this.tempPath, './cookie');
+        if (fs_1.default.existsSync(cookiePath)) {
+            this.load(JSON.parse(fs_1.default.readFileSync(path_1.resolve(this.tempPath, './cookie')).toString()));
+            if (!this.isLogin) {
+                fs_1.default.unlinkSync(cookiePath);
+                this.Login();
+            }
         }
         else {
             await this.phoneLogin(this.phoneNumber, this.password);
             const userStore = JSON.stringify(this.user.toJSON());
-            fs_1.default.writeFileSync(path_1.join(this.tempPath, "./cookie"), userStore);
+            fs_1.default.writeFileSync(cookiePath, userStore);
         }
         return this.user;
     }
@@ -42,14 +47,14 @@ class NeteaseMusic extends netease_music_sdk_1.MusicClient {
             const song = data.song;
             return {
                 id: song.id,
-                time: date_fns_1.format(new Date(song.dt), "mm:ss"),
+                time: date_fns_1.format(new Date(song.dt), 'mm:ss'),
                 picUrl: song.al.picUrl,
                 name: song.name,
                 author: song.ar
                     .map((item) => {
                     return item.name;
                 })
-                    .join(" & "),
+                    .join(' & '),
                 playCount: data.playCount,
             };
         })
@@ -61,6 +66,37 @@ class NeteaseMusic extends netease_music_sdk_1.MusicClient {
     }
     async getAllData(len = 10) {
         return await this.getRecordAndParseData(netease_music_sdk_1.UserRecordType.ALL, len);
+    }
+    async getPlaylistInfo(id) {
+        const playlistInfo = await super.getPlaylistInfo(id);
+        const playListData = playlistInfo.playlist;
+        const tracks = playListData.tracks.map((song) => {
+            return {
+                id: song.id,
+                time: date_fns_1.format(new Date(song.dt), 'mm:ss'),
+                picUrl: song.al.picUrl,
+                name: song.name,
+                author: song.ar
+                    .map((item) => {
+                    return item.name;
+                })
+                    .join(' & '),
+            };
+        });
+        return {
+            id,
+            coverImgUrl: playListData.coverImgUrl,
+            coverImgId: playListData.coverImgId,
+            playCount: playListData.playCount,
+            name: playListData.name,
+            data: tracks,
+        };
+    }
+    async getFavorite() {
+        var _a;
+        const allPlayListData = await this.getUserPlaylist(this.user.id);
+        const playListId = (_a = allPlayListData.playlist) === null || _a === void 0 ? void 0 : _a.shift().id;
+        return await this.getPlaylistInfo(playListId);
     }
 }
 exports.NeteaseMusic = NeteaseMusic;
