@@ -3,6 +3,27 @@
 import axios from 'axios'
 import { BiliBili, BiliSearch } from './interface/bili.interface'
 import { format } from 'date-fns'
+export interface FavoriteBangumiType {
+  title: string
+  cover: string
+  count: string | number
+  miniCover: string
+  countText: string
+  id: number
+}
+export interface PersonalVideoType {
+  pic: string
+  playCount: number
+  commentCount: number
+  desc: string
+  title: string
+  created: string
+  time: string
+  av: number
+  bv: string
+  url: string
+  author: string
+}
 
 export class BiliClient {
   private client = axios.create({
@@ -14,7 +35,7 @@ export class BiliClient {
   })
   constructor(private uid: number) {}
 
-  async getFavoriteBangumi(len = 15) {
+  async getFavoriteBangumi(len = 15): Promise<FavoriteBangumiType[]> {
     const { data } = await this.client({
       url: `bangumi/follow/list?type=1&pn=1&ps=${len}&vmid=${this.uid}`,
       method: 'get',
@@ -31,7 +52,7 @@ export class BiliClient {
     })
   }
 
-  async getPersonalVideo(len = 5) {
+  async getPersonalVideo(len = 5): Promise<PersonalVideoType[]> {
     const { data } = await this.client({
       url: `arc/search?mid=${this.uid}&ps=${len}&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp`,
     })

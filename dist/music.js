@@ -1,4 +1,11 @@
 "use strict";
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -97,6 +104,35 @@ class NeteaseMusic extends netease_music_sdk_1.MusicClient {
         const allPlayListData = await this.getUserPlaylist(this.user.id);
         const playListId = (_a = allPlayListData.playlist) === null || _a === void 0 ? void 0 : _a.shift().id;
         return await this.getPlaylistInfo(playListId);
+    }
+    async getMusicUrl(id) {
+        const music = await super.getMusicUrl(id);
+        const raw = music.data[0];
+        return {
+            id: raw.id,
+            url: raw.url,
+            size: (raw.size / 1024 / 1024).toFixed(2) + 'MB',
+            type: raw.type,
+            raw,
+        };
+    }
+    async getMusicsUrl(ids) {
+        var e_1, _a;
+        const songs = [];
+        try {
+            for (var ids_1 = __asyncValues(ids), ids_1_1; ids_1_1 = await ids_1.next(), !ids_1_1.done;) {
+                const id = ids_1_1.value;
+                songs.push(await this.getMusicUrl(id));
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (ids_1_1 && !ids_1_1.done && (_a = ids_1.return)) await _a.call(ids_1);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        return { songs };
     }
 }
 exports.NeteaseMusic = NeteaseMusic;
