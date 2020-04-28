@@ -1,7 +1,7 @@
 import { MusicClient, UserRecordType } from 'netease-music-sdk'
 import fs, { readFileSync, writeFileSync } from 'fs'
 import { resolve, join } from 'path'
-import { Song, Playlist, Music } from './interface/music.interface'
+import { Song, Playlist, Music, SongInfo } from './interface/music.interface'
 import { format } from 'date-fns'
 export interface PlayListType {
   id: number
@@ -108,15 +108,24 @@ export class NeteaseMusic extends MusicClient {
     const playListId = allPlayListData.playlist?.shift().id
     return await this.getPlaylistInfo(playListId)
   }
-  async getMusicUrl(id: string | number): Promise<GetMusicUrlType> {
+  async getMusicUrl(id: string | number) {
     const music: Music.MusicData = await super.getMusicUrl(id)
+    const { songs } = (await this.getSongInfo(
+      parseInt(id as string),
+    )) as SongInfo.SongInfoResp
+
+    const song = songs[0]
+
     const raw = music.data[0]
     return {
       id: raw.id,
       url: raw.url,
       size: (raw.size / 1024 / 1024).toFixed(2) + 'MB',
       type: raw.type,
-      raw,
+      title: song.name,
+      album: song.al.name,
+      author: song.ar.map((a) => a.name).join(' & '),
+      cover: song.al.picUrl,
     }
   }
   async getMusicsUrl(ids: (number | string)[]): Promise<GetMusicsUrlType> {
@@ -142,7 +151,11 @@ export interface GetMusicUrlType {
   url: string
   size: string
   type: string
-  raw: Music.MusicModel
+  title: string
+  album: string
+  author: string
+
+  cover: string
 }
 export interface GetMusicsUrlType {
   songs: GetMusicUrlType[]

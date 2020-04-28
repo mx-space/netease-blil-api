@@ -107,13 +107,18 @@ class NeteaseMusic extends netease_music_sdk_1.MusicClient {
     }
     async getMusicUrl(id) {
         const music = await super.getMusicUrl(id);
+        const { songs } = (await this.getSongInfo(parseInt(id)));
+        const song = songs[0];
         const raw = music.data[0];
         return {
             id: raw.id,
             url: raw.url,
             size: (raw.size / 1024 / 1024).toFixed(2) + 'MB',
             type: raw.type,
-            raw,
+            title: song.name,
+            album: song.al.name,
+            author: song.ar.map((a) => a.name).join(' & '),
+            cover: song.al.picUrl,
         };
     }
     async getMusicsUrl(ids) {
