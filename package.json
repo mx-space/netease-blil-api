@@ -1,10 +1,11 @@
 {
   "name": "@mx-space/extra",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "main": "dist/index.js",
   "scripts": {
     "build": "rm -r dist && tsc",
-    "dev": "ts-node"
+    "dev": "ts-node",
+    "release": "yarn build && yarn publish"
   },
   "dependencies": {
     "axios": "^0.19.2",
