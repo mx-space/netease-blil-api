@@ -1,4 +1,3 @@
-import { MusicClient } from 'netease-music-sdk';
 export interface PlayListType {
     id: number;
     time: string;
@@ -7,28 +6,31 @@ export interface PlayListType {
     author: string;
     playCount?: number;
 }
-export declare class NeteaseMusic extends MusicClient {
+export declare class NeteaseMusic {
     private phoneNumber;
     private password;
     private tempPath;
     constructor(phoneNumber: string, password: string);
-    Login(): Promise<import("netease-music-sdk/lib/user").User>;
+    private cookie;
+    private uid;
+    Login(): Promise<string | undefined>;
+    private getAccount;
     private getRecordAndParseData;
     getWeekData(len?: number): Promise<PlayListType[]>;
     getAllData(len?: number): Promise<PlayListType[]>;
     getPlaylistInfo(id: number): Promise<PersonalPlayListType>;
     getFavorite(): Promise<PersonalPlayListType>;
-    getMusicUrl(id: string | number): Promise<{
-        id: number;
-        url: string;
+    getMusicUrl(id: string): Promise<{
+        id: any;
+        url: any;
         size: string;
-        type: string;
-        title: string;
-        album: string;
-        author: string;
-        cover: string;
+        type: any;
+        title: any;
+        album: any;
+        author: any;
+        cover: any;
     }>;
-    getMusicsUrl(ids: (number | string)[]): Promise<GetMusicsUrlType>;
+    getMusicsUrl(ids: string[]): Promise<GetMusicsUrlType>;
 }
 export interface PersonalPlayListType {
     id: number;

@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __asyncValues = (this && this.__asyncValues) || function (o) {
     if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
     var m = o[Symbol.asyncIterator], i;
@@ -6,17 +25,14 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const netease_music_sdk_1 = require("netease-music-sdk");
-const fs_1 = __importDefault(require("fs"));
-const path_1 = require("path");
+exports.NeteaseMusic = void 0;
 const date_fns_1 = require("date-fns");
-class NeteaseMusic extends netease_music_sdk_1.MusicClient {
+const fs_1 = __importStar(require("fs"));
+const NeteaseCloudMusicApi_1 = require("NeteaseCloudMusicApi");
+const path_1 = require("path");
+class NeteaseMusic {
     constructor(phoneNumber, password) {
-        super();
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.tempPath = path_1.join(__dirname, '../temp');
@@ -31,24 +47,54 @@ class NeteaseMusic extends netease_music_sdk_1.MusicClient {
         }
     }
     async Login() {
-        const cookiePath = path_1.join(this.tempPath, './cookie');
+        const cookiePath = path_1.join(this.tempPath, 'netease_cookie');
         if (fs_1.default.existsSync(cookiePath)) {
-            this.load(JSON.parse(fs_1.default.readFileSync(path_1.resolve(this.tempPath, './cookie')).toString()));
-            if (!this.isLogin) {
+            try {
+                this.cookie = fs_1.readFileSync(cookiePath, {
+                    encoding: 'utf-8',
+                });
+            }
+            catch (_a) { }
+            try {
+                if (!this.cookie) {
+                    throw new Error();
+                }
+                await this.getAccount();
+            }
+            catch (_b) {
                 fs_1.default.unlinkSync(cookiePath);
                 this.Login();
             }
         }
         else {
-            await this.phoneLogin(this.phoneNumber, this.password);
-            const userStore = JSON.stringify(this.user.toJSON());
-            fs_1.default.writeFileSync(cookiePath, userStore);
+            const { body } = await NeteaseCloudMusicApi_1.login_cellphone({
+                phone: this.phoneNumber,
+                password: this.password,
+            });
+            if (body.cookie) {
+                fs_1.writeFileSync(cookiePath, body.cookie, {
+                    encoding: 'utf-8',
+                });
+                this.cookie = body.cookie;
+                await this.getAccount();
+            }
         }
-        return this.user;
+        return this.cookie;
+    }
+    async getAccount() {
+        const userAccount = (await NeteaseCloudMusicApi_1.user_account({
+            cookie: this.cookie,
+        }));
+        this.uid = userAccount.body.account.id;
+        return this.uid;
     }
     async getRecordAndParseData(type, len = 10) {
-        const record = await this.getUserRecord(this.user.id, type);
-        const data = type === netease_music_sdk_1.UserRecordType.ALL ? record.allData : record.weekData;
+        const record = (await NeteaseCloudMusicApi_1.user_record({
+            uid: this.uid,
+            cookie: this.cookie,
+            type,
+        })).body;
+        const data = type === 0 ? record.allData : record.weekData;
         return data
             .map((data) => {
             const song = data.song;
@@ -69,13 +115,13 @@ class NeteaseMusic extends netease_music_sdk_1.MusicClient {
             .slice(0, len);
     }
     async getWeekData(len = 10) {
-        return await this.getRecordAndParseData(netease_music_sdk_1.UserRecordType.WEEK, len);
+        return await this.getRecordAndParseData(1, len);
     }
     async getAllData(len = 10) {
-        return await this.getRecordAndParseData(netease_music_sdk_1.UserRecordType.ALL, len);
+        return await this.getRecordAndParseData(0, len);
     }
     async getPlaylistInfo(id) {
-        const playlistInfo = await super.getPlaylistInfo(id);
+        const playlistInfo = (await NeteaseCloudMusicApi_1.playlist_detail({ id })).body;
         const playListData = playlistInfo.playlist;
         const tracks = playListData.tracks.map((song) => {
             return {
@@ -101,20 +147,22 @@ class NeteaseMusic extends netease_music_sdk_1.MusicClient {
     }
     async getFavorite() {
         var _a;
-        const allPlayListData = await this.getUserPlaylist(this.user.id);
+        const allPlayListData = (await NeteaseCloudMusicApi_1.user_playlist({ uid: this.uid }))
+            .body;
         const playListId = (_a = allPlayListData.playlist) === null || _a === void 0 ? void 0 : _a.shift().id;
         return await this.getPlaylistInfo(playListId);
     }
     async getMusicUrl(id) {
-        const music = await super.getMusicUrl(id);
-        const { songs } = (await this.getSongInfo(parseInt(id)));
+        const [music] = (await NeteaseCloudMusicApi_1.song_url({ id })).body.data;
+        const { songs } = (await NeteaseCloudMusicApi_1.song_detail({
+            ids: id,
+        })).body;
         const song = songs[0];
-        const raw = music.data[0];
         return {
-            id: raw.id,
-            url: raw.url,
-            size: (raw.size / 1024 / 1024).toFixed(2) + 'MB',
-            type: raw.type,
+            id: music.id,
+            url: music.url,
+            size: (music.size / 1024 / 1024).toFixed(2) + 'MB',
+            type: music.type,
             title: song.name,
             album: song.al.name,
             author: song.ar.map((a) => a.name).join(' & '),

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BiliClient = void 0;
 const axios_1 = __importDefault(require("axios"));
 const date_fns_1 = require("date-fns");
 class BiliClient {

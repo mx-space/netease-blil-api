@@ -1,8 +1,17 @@
-import { MusicClient, UserRecordType } from 'netease-music-sdk'
-import fs, { readFileSync, writeFileSync } from 'fs'
-import { resolve, join } from 'path'
-import { Song, Playlist, Music, SongInfo } from './interface/music.interface'
 import { format } from 'date-fns'
+import fs, { readFileSync, writeFileSync } from 'fs'
+import {
+  login_cellphone,
+  playlist_detail,
+  song_detail,
+  song_url,
+  UserRecordType,
+  user_account,
+  user_playlist,
+  user_record,
+} from 'NeteaseCloudMusicApi'
+import { join } from 'path'
+import { Playlist, Song } from './interface/music.interface'
 export interface PlayListType {
   id: number
   time: string
@@ -11,10 +20,9 @@ export interface PlayListType {
   author: string
   playCount?: number
 }
-export class NeteaseMusic extends MusicClient {
+export class NeteaseMusic {
   private tempPath = join(__dirname, '../temp')
   constructor(private phoneNumber: string, private password: string) {
-    super()
     if (fs.existsSync(this.tempPath)) {
       if (fs.statSync(this.tempPath).isDirectory()) {
         return
@@ -24,30 +32,59 @@ export class NeteaseMusic extends MusicClient {
       fs.mkdirSync(this.tempPath)
     }
   }
-
+  private cookie: string | undefined
+  private uid: number | undefined
   public async Login() {
-    const cookiePath = join(this.tempPath, './cookie')
+    const cookiePath = join(this.tempPath, 'netease_cookie')
     if (fs.existsSync(cookiePath)) {
-      this.load(
-        JSON.parse(
-          fs.readFileSync(resolve(this.tempPath, './cookie')).toString(),
-        ),
-      )
-      if (!this.isLogin) {
+      try {
+        this.cookie = readFileSync(cookiePath, {
+          encoding: 'utf-8',
+        })
+      } catch {}
+      try {
+        if (!this.cookie) {
+          throw new Error()
+        }
+        await this.getAccount()
+      } catch {
         fs.unlinkSync(cookiePath)
         this.Login()
       }
     } else {
-      await this.phoneLogin(this.phoneNumber, this.password)
-      const userStore = JSON.stringify(this.user.toJSON())
-      fs.writeFileSync(cookiePath, userStore)
+      const { body } = await login_cellphone({
+        phone: this.phoneNumber,
+        password: this.password,
+      })
+      if (body.cookie) {
+        writeFileSync(cookiePath, body.cookie, {
+          encoding: 'utf-8',
+        })
+
+        this.cookie = body.cookie as string
+        await this.getAccount()
+      }
     }
-    return this.user
+    return this.cookie
+  }
+
+  private async getAccount() {
+    const userAccount = (await user_account({
+      cookie: this.cookie, // 凭证
+    })) as any
+    this.uid = userAccount.body.account.id
+    return this.uid
   }
 
   private async getRecordAndParseData(type: UserRecordType, len = 10) {
-    const record = await this.getUserRecord(this.user.id, type)
-    const data = type === UserRecordType.ALL ? record.allData : record.weekData
+    const record = (
+      await user_record({
+        uid: this.uid!,
+        cookie: this.cookie,
+        type,
+      })
+    ).body
+    const data = type === 0 ? record.allData : record.weekData
     return (data as any[])
       .map(
         (data): PlayListType => {
@@ -70,13 +107,13 @@ export class NeteaseMusic extends MusicClient {
       .slice(0, len)
   }
   async getWeekData(len = 10) {
-    return await this.getRecordAndParseData(UserRecordType.WEEK, len)
+    return await this.getRecordAndParseData(1, len)
   }
   async getAllData(len = 10) {
-    return await this.getRecordAndParseData(UserRecordType.ALL, len)
+    return await this.getRecordAndParseData(0, len)
   }
   async getPlaylistInfo(id: number): Promise<PersonalPlayListType> {
-    const playlistInfo = await super.getPlaylistInfo(id)
+    const playlistInfo = (await playlist_detail({ id })).body
     const playListData = playlistInfo.playlist as Playlist.Playlist
     const tracks = playListData.tracks.map(
       (song): PlayListType => {
@@ -104,31 +141,33 @@ export class NeteaseMusic extends MusicClient {
     }
   }
   async getFavorite(): Promise<PersonalPlayListType> {
-    const allPlayListData = await this.getUserPlaylist(this.user.id)
+    const allPlayListData = (await user_playlist({ uid: this.uid! }))
+      .body as any
     const playListId = allPlayListData.playlist?.shift().id
     return await this.getPlaylistInfo(playListId)
   }
-  async getMusicUrl(id: string | number) {
-    const music: Music.MusicData = await super.getMusicUrl(id)
-    const { songs } = (await this.getSongInfo(
-      parseInt(id as string),
-    )) as SongInfo.SongInfoResp
+  async getMusicUrl(id: string) {
+    const [music] = (await song_url({ id })).body.data as any[]
+    const { songs } = (
+      await song_detail({
+        ids: id,
+      })
+    ).body as any
 
     const song = songs[0]
 
-    const raw = music.data[0]
     return {
-      id: raw.id,
-      url: raw.url,
-      size: (raw.size / 1024 / 1024).toFixed(2) + 'MB',
-      type: raw.type,
+      id: music.id,
+      url: music.url,
+      size: (music.size / 1024 / 1024).toFixed(2) + 'MB',
+      type: music.type,
       title: song.name,
       album: song.al.name,
       author: song.ar.map((a) => a.name).join(' & '),
       cover: song.al.picUrl,
     }
   }
-  async getMusicsUrl(ids: (number | string)[]): Promise<GetMusicsUrlType> {
+  async getMusicsUrl(ids: string[]): Promise<GetMusicsUrlType> {
     const songs: GetMusicUrlType[] = []
     for await (const id of ids) {
       songs.push(await this.getMusicUrl(id))
