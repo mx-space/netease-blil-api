@@ -35,10 +35,10 @@
     "@types/node" "*"
     safe-buffer "*"
 
-NeteaseCloudMusicApi@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/NeteaseCloudMusicApi/-/NeteaseCloudMusicApi-4.0.3.tgz#5744c132faafe032438e9579bd042fd0f1d7d886"
-  integrity sha512-tghf9qbozfr4H9Dj1kqMYD07B2TOl/V8+N6rLfj8ShRdG8XTe1NmoW/XACR5IEc2CKH/9Bpxv40arLfJ7CpRxw==
+NeteaseCloudMusicApi@4.0.16:
+  version "4.0.16"
+  resolved "https://registry.yarnpkg.com/NeteaseCloudMusicApi/-/NeteaseCloudMusicApi-4.0.16.tgz#cdf890129beac728d00d4121dfd490ed987f3ad9"
+  integrity sha512-IlpA0fF4cMaKUZRC4knfqrkQQnE2jYOl5r2rF2lNJFYQA3l2spBN7+LCHM+zrZv9y8mGUa5WvRUcNNNssxT4bA==
   dependencies:
     axios "^0.21.1"
     express "^4.17.1"
