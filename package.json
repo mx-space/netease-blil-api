@@ -1,20 +1,40 @@
 {
   "name": "@mx-space/extra",
   "version": "0.4.0",
-  "main": "dist/index.js",
+  "main": "build/index.cjs.js",
+  "module": "build/index.esm.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "build": "rm -rf dist && yarn run tsc",
+    "prebuild": "rm -rf dist && rm -rf build",
+    "build": "yarn run tsc",
     "dev": "ts-node",
-    "release": "yarn build && yarn publish"
+    "prepackage": "rm -rf lib && rm -rf build && rm -rf esm",
+    "package": "NODE_ENV=production npm run build && rollup -c",
+    "release": "yarn package && yarn publish"
   },
-  "dependencies": {
-    "NeteaseCloudMusicApi": "4.0.16",
-    "axios": "^0.21.0",
-    "date-fns": "^2.12.0"
+  "files": [
+    "build",
+    "lib",
+    "esm",
+    "readme.md",
+    "tsconfig.json"
+  ],
+  "peerDependencies": {
+    "axios": "^0.21.0"
   },
   "devDependencies": {
     "@types/node": "^13.13.4",
-    "typescript": "4.1.5"
+    "NeteaseCloudMusicApi": "4.0.16",
+    "date-fns": "^2.12.0",
+    "@rollup/plugin-commonjs": "19.0.0",
+    "@rollup/plugin-node-resolve": "13.0.0",
+    "@rollup/plugin-typescript": "8.2.1",
+    "rollup": "2.47.0",
+    "rollup-plugin-dts": "3.0.2",
+    "rollup-plugin-terser": "7.0.2",
+    "rollup-plugin-peer-deps-external": "2.2.4",
+    "tslib": "2.2.0",
+    "typescript": "4.2.4"
   },
   "repository": {
     "type": "git",
@@ -25,6 +45,5 @@
   "bugs": {
     "url": "https://github.com/mx-space/extra/issues"
   },
-  "homepage": "https://github.com/mx-space/extra#readme",
-  "description": ""
+  "homepage": "https://github.com/mx-space/extra#readme"
 }

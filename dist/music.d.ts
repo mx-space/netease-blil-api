@@ -16,8 +16,8 @@ export declare class NeteaseMusic {
     Login(): Promise<string | undefined>;
     private getAccount;
     private getRecordAndParseData;
-    getWeekData(len?: number): Promise<PlayListType[]>;
-    getAllData(len?: number): Promise<PlayListType[]>;
+    getWeekData(len?: number): Promise<PlayListType[] | undefined>;
+    getAllData(len?: number): Promise<PlayListType[] | undefined>;
     getPlaylistInfo(id: number): Promise<PersonalPlayListType>;
     getFavorite(): Promise<PersonalPlayListType>;
     getMusicUrl(id: string): Promise<{

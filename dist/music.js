@@ -82,13 +82,19 @@ class NeteaseMusic {
         return this.cookie;
     }
     async getAccount() {
+        if (!this.cookie) {
+            return;
+        }
         const userAccount = (await NeteaseCloudMusicApi_1.user_account({
-            cookie: this.cookie,
+            cookie: this.cookie, // 凭证
         }));
         this.uid = userAccount.body.account.id;
         return this.uid;
     }
     async getRecordAndParseData(type, len = 10) {
+        if (!this.cookie) {
+            return;
+        }
         const record = (await NeteaseCloudMusicApi_1.user_record({
             uid: this.uid,
             cookie: this.cookie,

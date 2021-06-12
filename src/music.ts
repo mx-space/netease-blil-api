@@ -69,6 +69,9 @@ export class NeteaseMusic {
   }
 
   private async getAccount() {
+    if (!this.cookie) {
+      return
+    }
     const userAccount = (await user_account({
       cookie: this.cookie, // 凭证
     })) as any
@@ -77,6 +80,9 @@ export class NeteaseMusic {
   }
 
   private async getRecordAndParseData(type: UserRecordType, len = 10) {
+    if (!this.cookie) {
+      return
+    }
     const record = (
       await user_record({
         uid: this.uid!,
@@ -86,23 +92,21 @@ export class NeteaseMusic {
     ).body
     const data = type === 0 ? record.allData : record.weekData
     return (data as any[])
-      .map(
-        (data): PlayListType => {
-          const song = data.song as Song.Song
-          return {
-            id: song.id,
-            time: format(new Date(song.dt), 'mm:ss'),
-            picUrl: song.al.picUrl,
-            name: song.name,
-            author: song.ar
-              .map((item) => {
-                return item.name
-              })
-              .join(' & '),
-            playCount: data.playCount,
-          }
-        },
-      )
+      .map((data): PlayListType => {
+        const song = data.song as Song.Song
+        return {
+          id: song.id,
+          time: format(new Date(song.dt), 'mm:ss'),
+          picUrl: song.al.picUrl,
+          name: song.name,
+          author: song.ar
+            .map((item) => {
+              return item.name
+            })
+            .join(' & '),
+          playCount: data.playCount,
+        }
+      })
       .sort((a, b) => (b.playCount as number) - (a.playCount as number))
       .slice(0, len)
   }
@@ -115,21 +119,19 @@ export class NeteaseMusic {
   async getPlaylistInfo(id: number): Promise<PersonalPlayListType> {
     const playlistInfo = (await playlist_detail({ id })).body
     const playListData = playlistInfo.playlist as Playlist.Playlist
-    const tracks = playListData.tracks.map(
-      (song): PlayListType => {
-        return {
-          id: song.id,
-          time: format(new Date(song.dt), 'mm:ss'),
-          picUrl: song.al.picUrl,
-          name: song.name,
-          author: song.ar
-            .map((item) => {
-              return item.name
-            })
-            .join(' & '),
-        }
-      },
-    )
+    const tracks = playListData.tracks.map((song): PlayListType => {
+      return {
+        id: song.id,
+        time: format(new Date(song.dt), 'mm:ss'),
+        picUrl: song.al.picUrl,
+        name: song.name,
+        author: song.ar
+          .map((item) => {
+            return item.name
+          })
+          .join(' & '),
+      }
+    })
 
     return {
       id,

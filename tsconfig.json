@@ -13,7 +13,7 @@
     "preserveConstEnums": true,
     "sourceMap": false,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "noImplicitAny": false,
     "declaration": true,
     "typeRoots": [
