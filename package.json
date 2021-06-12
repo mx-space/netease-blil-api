@@ -8,7 +8,7 @@
     "release": "yarn build && yarn publish"
   },
   "dependencies": {
-    "NeteaseCloudMusicApi": "4.0.3",
+    "NeteaseCloudMusicApi": "4.0.16",
     "axios": "^0.21.0",
     "date-fns": "^2.12.0"
   },
