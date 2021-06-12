@@ -143,8 +143,12 @@ export class NeteaseMusic {
     }
   }
   async getFavorite(): Promise<PersonalPlayListType> {
-    const allPlayListData = (await user_playlist({ uid: this.uid! }))
-      .body as any
+    if (!this.cookie) {
+      throw new Error('fuck netease: 2021-06-11')
+    }
+    const allPlayListData = (
+      await user_playlist({ uid: this.uid!, cookie: this.cookie! })
+    ).body as any
     const playListId = allPlayListData.playlist?.shift().id
     return await this.getPlaylistInfo(playListId)
   }
