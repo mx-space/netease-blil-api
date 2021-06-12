@@ -165,7 +165,7 @@ export class NeteaseMusic {
       type: music.type,
       title: song.name,
       album: song.al.name,
-      author: song.ar.map((a) => a.name).join(' & '),
+      author: song.ar.map((a: { name: any }) => a.name).join(' & '),
       cover: song.al.picUrl,
     }
   }

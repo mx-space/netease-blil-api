@@ -10,13 +10,6 @@ import dts from 'rollup-plugin-dts'
 // import { babel } from '@rollup/plugin-babel'
 
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
-
-const packageJson = require('./package.json')
-
-const globals = {
-  ...packageJson.devDependencies,
-}
-
 const dir = 'build'
 
 /**
@@ -24,9 +17,7 @@ const dir = 'build'
  */
 const config = [
   {
-    input: 'src/index.ts',
-
-    external: ['lodash-es', ...Object.keys(globals)],
+    input: 'src/music.ts',
 
     output: [
       {
