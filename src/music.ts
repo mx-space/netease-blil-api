@@ -117,7 +117,12 @@ export class NeteaseMusic {
     return await this.getRecordAndParseData(0, len)
   }
   async getPlaylistInfo(id: number): Promise<PersonalPlayListType> {
-    const playlistInfo = (await playlist_detail({ id })).body
+    if (!this.cookie) {
+      // FIXME
+      throw new Error('fuck netease: 2021-06-11')
+    }
+    const playlistInfo = (await playlist_detail({ id, cookie: this.cookie! }))
+      .body
     const playListData = playlistInfo.playlist as Playlist.Playlist
     const tracks = playListData.tracks.map((song): PlayListType => {
       return {
@@ -144,6 +149,7 @@ export class NeteaseMusic {
   }
   async getFavorite(): Promise<PersonalPlayListType> {
     if (!this.cookie) {
+      // FIXME
       throw new Error('fuck netease: 2021-06-11')
     }
     const allPlayListData = (

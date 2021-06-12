@@ -4,3 +4,4 @@ playground.ts
 build
 lib
 dist
+test.ts
