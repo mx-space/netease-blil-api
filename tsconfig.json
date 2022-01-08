@@ -1,7 +1,12 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "module": "CommonJS",
+    "target": "ES2017",
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
     "moduleResolution": "node",
     "strict": true,
     "resolveJsonModule": true,
@@ -12,14 +17,9 @@
     "declaration": true,
     "outDir": "./dist",
     "baseUrl": "./src",
-    "target": "ES2017",
-    "skipDefaultLibCheck": true,
-    "noImplicitAny": true,
-    "lib": [
-      "ES2020"
-    ]
+    "incremental": true,
   },
   "include": [
-    "src/**/*.ts"
+    "src/"
   ]
 }
