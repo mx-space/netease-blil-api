@@ -1,6 +1,6 @@
 {
   "name": "@mx-space/extra",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -10,16 +10,11 @@
     "release": "yarn build && yarn publish"
   },
   "files": [
-    "build",
-    "lib",
-    "esm",
-    "readme.md",
-    "tsconfig.json"
+    "dist"
   ],
   "dependencies": {
     "NeteaseCloudMusicApi": "4.2.0",
-    "date-fns": "^2.12.0",
-    "tslib": "2.3.1"
+    "date-fns": "^2.12.0"
   },
   "peerDependencies": {
     "axios": "^0.21.0"
