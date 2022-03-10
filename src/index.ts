@@ -6,3 +6,7 @@ export {
   PlayListType,
 } from './music'
 export * from './bilibili'
+
+import * as NeteaseCloudMusicApi from 'NeteaseCloudMusicApi'
+
+export { NeteaseCloudMusicApi }
