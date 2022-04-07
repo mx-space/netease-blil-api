@@ -34,7 +34,12 @@ export class NeteaseMusic {
   }
   private cookie: string | undefined
   private uid: number | undefined
-  public async Login() {
+
+  public get Login() {
+    return this.login
+  }
+
+  public async login() {
     const cookiePath = join(this.tempPath, 'netease_cookie')
     if (fs.existsSync(cookiePath)) {
       try {
@@ -68,7 +73,7 @@ export class NeteaseMusic {
     return this.cookie
   }
 
-  private async getAccount() {
+  public async getAccount() {
     if (!this.cookie) {
       return
     }
