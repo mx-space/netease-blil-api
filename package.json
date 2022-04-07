@@ -12,6 +12,12 @@
   "files": [
     "dist"
   ],
+  "bump": {
+    "before": [
+      "npm run build"
+    ],
+    "publish": true
+  },
   "dependencies": {
     "NeteaseCloudMusicApi": "4.2.0",
     "date-fns": "^2.12.0"
