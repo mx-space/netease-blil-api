@@ -22,7 +22,7 @@ export interface PlayListType {
 }
 export class NeteaseMusic {
   private tempPath = join(__dirname, '../temp')
-  constructor(private phoneNumber: string, private password: string) {
+  constructor(private phoneNumber: string, private password: string, private md5_password: string) {
     if (fs.existsSync(this.tempPath)) {
       if (fs.statSync(this.tempPath).isDirectory()) {
         return
@@ -54,12 +54,41 @@ export class NeteaseMusic {
         await this.getAccount()
       } catch {
         fs.unlinkSync(cookiePath)
-        this.Login()
+        await this.Login()
       }
     } else {
       const { body } = await login_cellphone({
         phone: this.phoneNumber,
         password: this.password,
+      })
+      if (body.cookie) {
+        writeFileSync(cookiePath, body.cookie, {
+          encoding: 'utf-8',
+        })
+
+        this.cookie = body.cookie as string
+        await this.getAccount()
+      }
+    }
+    if (fs.existsSync(cookiePath)) {
+      try {
+        this.cookie = readFileSync(cookiePath, {
+          encoding: 'utf-8',
+        })
+      } catch {}
+      try {
+        if (!this.cookie) {
+          throw new Error()
+        }
+        await this.getAccount()
+      } catch {
+        fs.unlinkSync(cookiePath)
+        await this.Login()
+      }
+    } else {
+      const { body } = await login_cellphone({
+        phone: this.phoneNumber,
+        md5_password: this.md5_password,
       })
       if (body.cookie) {
         writeFileSync(cookiePath, body.cookie, {
