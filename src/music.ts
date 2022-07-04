@@ -56,7 +56,7 @@ export class NeteaseMusic {
         fs.unlinkSync(cookiePath)
         await this.Login()
       }
-    } else {
+    } else if(this.password!=null){
       const { body } = await login_cellphone({
         phone: this.phoneNumber,
         password: this.password,
@@ -70,22 +70,7 @@ export class NeteaseMusic {
         await this.getAccount()
       }
     }
-    if (fs.existsSync(cookiePath)) {
-      try {
-        this.cookie = readFileSync(cookiePath, {
-          encoding: 'utf-8',
-        })
-      } catch {}
-      try {
-        if (!this.cookie) {
-          throw new Error()
-        }
-        await this.getAccount()
-      } catch {
-        fs.unlinkSync(cookiePath)
-        await this.Login()
-      }
-    } else {
+    else {
       const { body } = await login_cellphone({
         phone: this.phoneNumber,
         md5_password: this.md5_password,
