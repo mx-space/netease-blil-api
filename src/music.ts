@@ -56,7 +56,7 @@ export class NeteaseMusic {
         fs.unlinkSync(cookiePath)
         await this.Login()
       }
-    } else if(this.password!=null){
+    } else if(this.password){
       const { body } = await login_cellphone({
         phone: this.phoneNumber,
         password: this.password,
