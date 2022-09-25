@@ -2,13 +2,13 @@ lockfileVersion: 5.3
 
 specifiers:
   '@types/node': 13.13.52
-  NeteaseCloudMusicApi: 4.6.6
+  NeteaseCloudMusicApi: 4.8.2
   axios: 0.27.2
   date-fns: ^2.12.0
   typescript: 4.5.4
 
 dependencies:
-  NeteaseCloudMusicApi: 4.6.6
+  NeteaseCloudMusicApi: 4.8.2
   date-fns: 2.28.0
 
 devDependencies:
@@ -31,8 +31,8 @@ packages:
     resolution: {integrity: sha512-s3nugnZumCC//n4moGGe6tkNMyYEdaDBitVjwPxXmR5lnMG5dHePinH2EdxkG3Rh1ghFHHixAG4NJhpJW1rthQ==}
     dev: true
 
-  /NeteaseCloudMusicApi/4.6.6:
-    resolution: {integrity: sha512-7VNbW6MlMleuG6WDglIFYHtlICJNxF7Nw20vZxaiGdrvQDB6LJvOy6kpXivwATYlkAwzXhz67dNuQVJ16ctXLw==}
+  /NeteaseCloudMusicApi/4.8.2:
+    resolution: {integrity: sha512-2IuayTyNwqq6rSX0EYzAuxMtrADL0iNjdsbbrVoTJ58wyYPGCp8Dp9iQxRl71Mmrdbj8eJbPqow7jhOlpdyDDA==}
     engines: {node: '>=12'}
     hasBin: true
     dependencies:
