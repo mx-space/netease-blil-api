@@ -19,7 +19,7 @@
     "publish": true
   },
   "dependencies": {
-    "NeteaseCloudMusicApi": "4.8.9",
+    "NeteaseCloudMusicApi": "4.8.10",
     "date-fns": "^2.29.3"
   },
   "peerDependencies": {
