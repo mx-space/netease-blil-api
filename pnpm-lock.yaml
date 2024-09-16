@@ -1,12 +1,16 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   NeteaseCloudMusicApi:
     specifier: 4.8.10
     version: 4.8.10
   date-fns:
-    specifier: ^2.29.3
-    version: 2.29.3
+    specifier: ^4.0.0
+    version: 4.0.0
 
 devDependencies:
   '@types/node':
@@ -233,9 +237,8 @@ packages:
     engines: {node: '>= 6'}
     dev: false
 
-  /date-fns@2.29.3:
-    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
-    engines: {node: '>=0.11'}
+  /date-fns@4.0.0:
+    resolution: {integrity: sha512-6K33+I8fQ5otvHgLIvKK1xmMbLAh0pduyrx7dwMXKiGYeoWhmk6M3Zoak9n7bXHMJQlHq1yqmdGy1QxKddJjUA==}
     dev: false
 
   /debug@2.6.9:
